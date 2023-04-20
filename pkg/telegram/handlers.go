@@ -16,27 +16,21 @@ const (
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 	// log.Printf("[%s] %s", message.From.UserName, message.Text)
-	msg := tgbotapi.NewMessage(message.Chat.ID, "The link is saved")
 	_, err := url.ParseRequestURI(message.Text)
 	if err != nil {
-		msg.Text = "The link is not valid"
-		_, err := b.bot.Send(msg)
-		return err
+		return errInvalidURL
 	}
 	accessToken, err := b.getAccessToken(message.Chat.ID)
 	if err != nil {
-		msg.Text = "You are not authorized. Use the /start command"
-		_, err := b.bot.Send(msg)
-		return err
+		return errUnauthorized
 	}
 	if err := b.pocketClient.Add(context.Background(), pocket.AddInput{
 		AccessToken: accessToken,
 		URL:         message.Text,
 	}); err != nil {
-		msg.Text = "The link wasnt saved, try again"
-		_, err := b.bot.Send(msg)
-		return err
+		return errUnableToSave
 	}
+	msg := tgbotapi.NewMessage(message.Chat.ID, "The link is saved")
 	_, err = b.bot.Send(msg)
 	return err
 }

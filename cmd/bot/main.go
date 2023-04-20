@@ -37,6 +37,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
+
 	if err := authorizationServer.Start(); err != nil {
 		log.Fatal(err)
 	}
