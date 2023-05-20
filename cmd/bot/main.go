@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"telegram-bot/pkg/repository"
 	"telegram-bot/pkg/repository/boltdb"
 	"telegram-bot/pkg/server"
@@ -9,17 +10,21 @@ import (
 
 	"github.com/boltdb/bolt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/subosito/gotenv"
 	"github.com/zhashkevych/go-pocket-sdk"
 )
 
+const path = "./.env"
+
 func main() {
-	bot, err := tgbotapi.NewBotAPI("6245099511:AAFiKBS-4hn3cCDUdvYU4xODAC4nsuhv2Ds")
+	err := gotenv.Load(path)
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	bot.Debug = true
-	pocketClient, err := pocket.NewClient("106869-dca7518eb58b445d8d67fce")
+	pocketClient, err := pocket.NewClient(os.Getenv("POCKET"))
 	if err != nil {
 		log.Fatal(err)
 	}
